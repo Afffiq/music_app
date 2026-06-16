@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,17 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Music App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Music App'),
-        ),
-        body: const Center(
-          child: Text(
-            'Firebase Connected Successfully',
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ),
+      home: const LoginScreen(),
     );
   }
 }
