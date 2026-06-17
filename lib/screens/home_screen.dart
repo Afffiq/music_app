@@ -1,14 +1,38 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/admin_service.dart';
 import 'login_screen.dart';
+import 'upload_song_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  Future<void> logout(BuildContext context) async {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  bool isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkAdmin();
+  }
+
+  Future<void> checkAdmin() async {
+    bool result = await AdminService().isAdmin();
+
+    setState(() {
+      isAdmin = result;
+    });
+  }
+
+  Future<void> logout() async {
     await AuthService().signOut();
 
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(
       context,
@@ -27,14 +51,36 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => logout(context),
+            onPressed: logout,
           ),
         ],
       ),
-      body: const Center(
-        child: Text(
-          "Welcome to Music App",
-          style: TextStyle(fontSize: 24),
+
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            const Text(
+              "Welcome to Music App",
+              style: TextStyle(fontSize: 24),
+            ),
+
+            const SizedBox(height: 20),
+
+            if (isAdmin)
+              ElevatedButton(
+                onPressed: () { Navigator.push(
+                context,
+                 MaterialPageRoute(
+                 builder: (_) =>
+                 const UploadSongScreen(),
+                  ),
+               );
+               },
+                child: const Text("Upload Song"),
+              ),
+          ],
         ),
       ),
     );

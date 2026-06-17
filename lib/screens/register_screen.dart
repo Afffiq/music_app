@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/firestore_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -11,33 +13,33 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
   final authService = AuthService();
+  final firestoreService = FirestoreService();
+  
 
   Future<void> register() async {
-    try {
-      await authService.signUp(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+  try {
+    print("Step 1");
 
-      if (!mounted) return;
+    UserCredential userCredential =
+        await authService.signUp(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Account created successfully"),
-        ),
-      );
+    print("Step 2");
 
-      Navigator.pop(context);
-    } catch (e) {
-      if (!mounted) return;
+    await firestoreService.createUser(
+      uid: userCredential.user!.uid,
+      email: emailController.text.trim(),
+    );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
+    print("Step 3");
+
+  } catch (e) {
+    print("ERROR: $e");
   }
+}
 
   @override
   Widget build(BuildContext context) {
