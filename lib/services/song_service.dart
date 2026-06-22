@@ -8,13 +8,13 @@ class SongService {
   Future<void> addSong({
     required String title,
     required String artist,
-    required String audioUrl,
+    required String assetPath,
     required int coverIndex,
   }) async {
     await _firestore.collection('songs').add({
       'title': title,
       'artist': artist,
-      'audioUrl': audioUrl,
+      'assetPath': assetPath,
       'coverIndex': coverIndex,
       'createdAt': Timestamp.now(),
     });

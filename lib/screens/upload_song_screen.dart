@@ -58,7 +58,7 @@ class _UploadSongScreenState
       await songService.addSong(
         title: titleController.text.trim(),
         artist: artistController.text.trim(),
-        audioUrl: audioUrlController.text.trim(),
+        assetPath: audioUrlController.text.trim(),
         coverIndex: coverIndex,
       );
 
