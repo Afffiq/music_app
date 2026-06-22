@@ -2,14 +2,14 @@ class Song {
   final String id;
   final String title;
   final String artist;
-  final String audioUrl;
+  final String assetPath;
   final int coverIndex;
 
   Song({
     required this.id,
     required this.title,
     required this.artist,
-    required this.audioUrl,
+    required this.assetPath,
     required this.coverIndex,
   });
 
@@ -19,10 +19,10 @@ class Song {
   ) {
     return Song(
       id: id,
-      title: data['title'],
-      artist: data['artist'],
-      audioUrl: data['audioUrl'],
-      coverIndex: data['coverIndex'],
+      title: data['title'] ?? '',
+      artist: data['artist'] ?? '',
+      assetPath: data['assetPath'] ?? '',
+      coverIndex: data['coverIndex'] ?? 1,
     );
   }
 }

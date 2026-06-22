@@ -3,6 +3,7 @@ import '../services/auth_service.dart';
 import '../services/admin_service.dart';
 import 'login_screen.dart';
 import 'upload_song_screen.dart';
+import 'song_library_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -67,6 +68,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             const SizedBox(height: 20),
+
+          ElevatedButton(
+            onPressed: () {
+
+              Navigator.push(
+               context,
+               MaterialPageRoute(
+                 builder: (_) =>
+                  const SongLibraryScreen(),
+                ),
+              );
+
+            },
+            child: const Text(
+             "Music Library",
+            ),
+          ),
 
             if (isAdmin)
               ElevatedButton(
