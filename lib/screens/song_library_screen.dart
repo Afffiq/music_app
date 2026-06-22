@@ -51,6 +51,15 @@ class _SongLibraryScreenState
             );
           }
 
+          if (snapshot.hasError) {
+
+            return Center(
+              child: Text(
+                "Error: ${snapshot.error}",
+              ),
+            );
+          }
+
           if (!snapshot.hasData ||
               snapshot.data!.isEmpty) {
 
@@ -73,32 +82,58 @@ class _SongLibraryScreenState
               Song song =
                   songs[index];
 
-              return ListTile(
+              return Card(
+                margin:
+                    const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
 
-                onTap: () {
+                child: ListTile(
 
-               Navigator.push(
-                context,
-                MaterialPageRoute(
-                 builder: (_) =>
-                  PlayerScreen(
-                   song: song,
+                  onTap: () {
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            PlayerScreen(
+                          songs: songs,
+                          currentIndex: index,
+                        ),
+                      ),
+                    );
+
+                  },
+
+                  leading: ClipRRect(
+                    borderRadius:
+                        BorderRadius.circular(8),
+
+                    child: Image.asset(
+                      'assets/album_covers/cover${song.coverIndex}.png',
+                      width: 55,
+                      height: 55,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                  title: Text(
+                    song.title,
+                    style: const TextStyle(
+                      fontWeight:
+                          FontWeight.bold,
+                    ),
+                  ),
+
+                  subtitle: Text(
+                    song.artist,
+                  ),
+
+                  trailing: const Icon(
+                    Icons.play_arrow,
                   ),
                 ),
-              );
-
-                },
-
-               leading: Image.asset(
-                 'assets/album_covers/cover${song.coverIndex}.png',
-                 width: 50,
-                 height: 50,
-                 fit: BoxFit.cover,
-                ),
-
-               title: Text(song.title),
-
-               subtitle: Text(song.artist),
               );
             },
           );
