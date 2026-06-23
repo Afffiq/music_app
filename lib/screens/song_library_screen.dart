@@ -1,141 +1,177 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import '../models/song.dart';
 import '../services/song_service.dart';
 import 'player_screen.dart';
+import '../services/favorite_service.dart';
 
 class SongLibraryScreen extends StatefulWidget {
   const SongLibraryScreen({super.key});
 
   @override
-  State<SongLibraryScreen> createState() =>
-      _SongLibraryScreenState();
+  State<SongLibraryScreen> createState() => _SongLibraryScreenState();
 }
 
-class _SongLibraryScreenState
-    extends State<SongLibraryScreen> {
-
+class _SongLibraryScreenState extends State<SongLibraryScreen> {
   final songService = SongService();
+  final searchController = TextEditingController();
+  final favoriteService = FavoriteService();
 
-  late Future<List<Song>> songsFuture;
+List<String> favoriteSongIds = [];
+
+  List<Song> allSongs = [];
+  List<Song> filteredSongs = [];
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
+    loadSongs();
+  }
 
-    songsFuture =
-        songService.getSongs();
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> loadSongs() async {
+    try {
+      allSongs = await songService.getSongs();
+      favoriteSongIds = await favoriteService.getFavoriteSongIds();
+      filteredSongs = List.from(allSongs);
+    } catch (error) {
+      errorMessage = error.toString();
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void searchSongs(String query) {
+    setState(() {
+      final lowerQuery = query.toLowerCase();
+      filteredSongs = allSongs.where((song) {
+        return song.title.toLowerCase().contains(lowerQuery) ||
+            song.artist.toLowerCase().contains(lowerQuery);
+      }).toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Music Library",
-        ),
+        title: Text(
+          'Music Library (${filteredSongs.length})',),
       ),
-
-      body: FutureBuilder<List<Song>>(
-        future: songsFuture,
-
-        builder: (context, snapshot) {
-
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
-
+      body: Builder(
+        builder: (context) {
+          if (isLoading) {
             return const Center(
-              child:
-                  CircularProgressIndicator(),
+              child: CircularProgressIndicator(),
             );
           }
 
-          if (snapshot.hasError) {
-
+          if (errorMessage != null) {
             return Center(
-              child: Text(
-                "Error: ${snapshot.error}",
-              ),
+              child: Text('Error: $errorMessage'),
             );
           }
 
-          if (!snapshot.hasData ||
-              snapshot.data!.isEmpty) {
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: searchSongs,
+                  decoration: InputDecoration(
+                    hintText: 'Search songs...',
+                    prefixIcon: const Icon(Icons.search),
 
-            return const Center(
-              child: Text(
-                "No songs found",
-              ),
-            );
-          }
-
-          List<Song> songs =
-              snapshot.data!;
-
-          return ListView.builder(
-            itemCount: songs.length,
-
-            itemBuilder:
-                (context, index) {
-
-              Song song =
-                  songs[index];
-
-              return Card(
-                margin:
-                    const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
                 ),
-
-                child: ListTile(
-
-                  onTap: () {
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            PlayerScreen(
-                          songs: songs,
-                          currentIndex: index,
+              ),
+              if (filteredSongs.isEmpty)
+                const Expanded(
+                  child: Center(
+                    child: Text('No songs found'),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredSongs.length,
+                    itemBuilder: (context, index) {
+                      final song = filteredSongs[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
                         ),
-                      ),
-                    );
+                        child: ListTile(
+                          onTap: () {
+                             Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PlayerScreen(
+                                  songs: filteredSongs,
+                                  currentIndex: index,
+                                ),
+                              ),
+                            );
+                          
+                          },
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/album_covers/cover${song.coverIndex}.png',
+                              width: 55,
+                              height: 55,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          title: Text(
+                            song.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Text(song.artist),
+                          trailing: IconButton(
 
-                  },
+                            icon: Icon(
+                              favoriteSongIds.contains(
+                                song.id,
+                             )
+                             ? Icons.favorite
+                             : Icons.favorite_border,
 
-                  leading: ClipRRect(
-                    borderRadius:
-                        BorderRadius.circular(8),
+                            ),
 
-                    child: Image.asset(
-                      'assets/album_covers/cover${song.coverIndex}.png',
-                      width: 55,
-                      height: 55,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                            onPressed: () async {
 
-                  title: Text(
-                    song.title,
-                    style: const TextStyle(
-                      fontWeight:
-                          FontWeight.bold,
-                    ),
-                  ),
+                              await favoriteService
+                             .toggleFavorite(
+                                song.id,
+                              );
 
-                  subtitle: Text(
-                    song.artist,
-                  ),
+                             await loadSongs();
 
-                  trailing: const Icon(
-                    Icons.play_arrow,
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              );
-            },
+            ],
           );
         },
       ),

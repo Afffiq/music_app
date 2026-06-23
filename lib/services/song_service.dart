@@ -25,9 +25,10 @@ class SongService {
         await _firestore.collection('songs').get();
 
     return snapshot.docs.map((doc) {
+      final data = doc.data();
       return Song.fromMap(
         doc.id,
-        doc.data() as Map<String, dynamic>,
+        data is Map<String, dynamic> ? data : {},
       );
     }).toList();
   }

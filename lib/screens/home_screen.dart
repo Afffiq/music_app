@@ -4,6 +4,7 @@ import '../services/admin_service.dart';
 import 'login_screen.dart';
 import 'upload_song_screen.dart';
 import 'song_library_screen.dart';
+import 'favorites_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -85,6 +86,23 @@ class _HomeScreenState extends State<HomeScreen> {
              "Music Library",
             ),
           ),
+
+          ElevatedButton(
+            onPressed: () {
+
+              Navigator.push(
+                context,
+                  MaterialPageRoute(
+                  builder: (_) =>
+                  const FavoritesScreen(),
+                ),
+              );
+
+            },
+            child: const Text(
+             "Favorite Songs ❤️",
+            ),
+        ),
 
             if (isAdmin)
               ElevatedButton(
