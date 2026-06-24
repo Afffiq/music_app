@@ -90,7 +90,7 @@ List<String> favoriteSongIds = [];
                   onChanged: searchSongs,
                   decoration: InputDecoration(
                     hintText: 'Search songs...',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search,color: Color(0xFF23D160),),
 
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -111,9 +111,11 @@ List<String> favoriteSongIds = [];
                     itemBuilder: (context, index) {
                       final song = filteredSongs[index];
                       return Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
+                        color: const Color(0xFF002B12),
+
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.circular(15),
                         ),
                         child: ListTile(
                           onTap: () {

@@ -228,10 +228,32 @@ class _PlayerScreenState
 
             children: [
 
-              Image.asset(
-                'assets/album_covers/cover${currentSong.coverIndex}.png',
-                width: 250,
-                height: 250,
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius:
+                  BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(
+                         0xFF23D160,
+                        ).withOpacity(0.4),
+                        blurRadius: 25,
+                        spreadRadius: 2,
+                     ),
+                    ],
+                ),
+
+              child: ClipRRect(
+                borderRadius:
+                BorderRadius.circular(25),
+
+                  child: Image.asset(
+                    'assets/album_covers/cover${currentSong.coverIndex}.png',
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  ),
+              ),
               ),
 
               const SizedBox(
@@ -242,7 +264,8 @@ class _PlayerScreenState
                 currentSong.title,
                 style:
                     const TextStyle(
-                  fontSize: 24,
+                  fontSize: 28,
+                  letterSpacing: 1,
                   fontWeight:
                       FontWeight.bold,
                 ),
@@ -266,10 +289,27 @@ class _PlayerScreenState
                 height: 25,
               ),
 
-              Slider(
-                min: 0,
+              SliderTheme(
+                data: SliderTheme.of(context)
+                .copyWith(
 
-                max: duration
+                  activeTrackColor:
+                  const Color(0xFF23D160),
+
+                  thumbColor:
+                  const Color(0xFF23D160),
+
+                  overlayColor:
+                  const Color(0x3323D160),
+
+                  inactiveTrackColor:
+                  Colors.white24,
+                ),
+
+                child: Slider(
+                  min: 0,
+
+                  max: duration
                             .inSeconds >
                         0
                     ? duration
@@ -277,7 +317,7 @@ class _PlayerScreenState
                         .toDouble()
                     : 1,
 
-                value: position
+                  value: position
                     .inSeconds
                     .clamp(
                       0,
@@ -290,16 +330,17 @@ class _PlayerScreenState
                     )
                     .toDouble(),
 
-                onChanged:
-                    (value) async {
+                  onChanged:
+                  (value) async {
 
-                  await player.seek(
-                    Duration(
-                      seconds:
+                    await player.seek(
+                      Duration(
+                        seconds:
                           value.toInt(),
-                    ),
-                  );
-                },
+                      ),
+                    );
+                  },
+                ),
               ),
 
               Padding(
@@ -322,8 +363,9 @@ class _PlayerScreenState
                     ),
 
                     Text(
-                      formatDuration(
-                        duration,
+                      formatDuration(position),
+                      style: const TextStyle(
+                        color: Colors.white70,
                       ),
                     ),
                   ],
@@ -336,40 +378,46 @@ class _PlayerScreenState
 
               Row(
                 mainAxisAlignment:
-                    MainAxisAlignment
-                        .center,
+                MainAxisAlignment.center,
 
                 children: [
 
                   IconButton(
                     iconSize: 50,
-                    onPressed:
-                        previousSong,
-                    icon:
-                        const Icon(
-                      Icons
-                          .skip_previous,
+                    color: Colors.white,
+                    onPressed: previousSong,
+                    icon: const Icon(
+                      Icons.skip_previous,
                     ),
                   ),
 
-                  IconButton(
-                    iconSize: 80,
-                    onPressed:
-                        playPause,
-                    icon: Icon(
-                      isPlaying
-                          ? Icons.pause
-                          : Icons
-                              .play_arrow,
+                  const SizedBox(width: 20),
+
+                  Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFF23D160),
+                    ),
+
+                    child: IconButton(
+                      iconSize: 50,
+                      color: Colors.black,
+                      onPressed: playPause,
+                      icon: Icon(
+                        isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                      ),
                     ),
                   ),
+
+                  const SizedBox(width: 20),
 
                   IconButton(
                     iconSize: 50,
-                    onPressed:
-                        nextSong,
-                    icon:
-                        const Icon(
+                    color: Colors.white,
+                    onPressed: nextSong,
+                    icon: const Icon(
                       Icons.skip_next,
                     ),
                   ),

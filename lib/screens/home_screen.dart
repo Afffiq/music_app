@@ -44,81 +44,184 @@ class _HomeScreenState extends State<HomeScreen> {
       (route) => false,
     );
   }
+  
+  Widget buildMenuCard({
+  required String title,
+  required String subtitle,
+  required IconData icon,
+  required VoidCallback onTap,
+}) {
+  return Card(
+    color: const Color(0xFF002B12),
+
+    elevation: 10,
+
+    shape: RoundedRectangleBorder(
+      borderRadius:
+          BorderRadius.circular(20),
+    ),
+
+    child: ListTile(
+      contentPadding:
+          const EdgeInsets.all(16),
+
+      leading: Icon(
+        icon,
+        color: const Color(
+          0xFF23D160,
+        ),
+        size: 32,
+      ),
+
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight:
+              FontWeight.bold,
+        ),
+      ),
+
+      subtitle: Text(
+        subtitle,
+      ),
+
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+      ),
+
+      onTap: onTap,
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Music App"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: logout,
+      ),
+
+      body: SingleChildScrollView(
+  child: Padding(
+    padding: const EdgeInsets.all(24),
+
+    child: Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
+
+      children: [
+
+        const SizedBox(height: 20),
+
+        const Text(
+          "🎵 Music App",
+          style: TextStyle(
+            fontSize: 34,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        const Text(
+          "Listen to your favorite music",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white70,
+          ),
+        ),
+
+        const SizedBox(height: 40),
+
+        buildMenuCard(
+          title: "Music Library",
+          subtitle: "Browse all songs",
+          icon: Icons.library_music,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    const SongLibraryScreen(),
+              ),
+            );
+          },
+        ),
+
+        const SizedBox(height: 15),
+
+        buildMenuCard(
+          title: "Favorite Songs",
+          subtitle: "Your liked music",
+          icon: Icons.favorite,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    const FavoritesScreen(),
+              ),
+            );
+          },
+        ),
+
+        if (isAdmin) ...[
+
+          const SizedBox(height: 15),
+
+          buildMenuCard(
+            title: "Upload Song",
+            subtitle: "Admin only",
+            icon: Icons.upload_file,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      const UploadSongScreen(),
+                ),
+              );
+            },
           ),
         ],
-      ),
 
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        const SizedBox(height: 30),
 
-            const Text(
-              "Welcome to Music App",
-              style: TextStyle(fontSize: 24),
+        SizedBox(
+          width: double.infinity,
+
+          child: ElevatedButton.icon(
+            onPressed: logout,
+
+            icon: const Icon(
+              Icons.logout,
             ),
 
-            const SizedBox(height: 20),
+            label: const Text(
+              "Logout",
+            ),
 
-          ElevatedButton(
-            onPressed: () {
+            style:
+                ElevatedButton.styleFrom(
+              backgroundColor:
+                  const Color(
+                0xFF23D160,
+              ),
 
-              Navigator.push(
-               context,
-               MaterialPageRoute(
-                 builder: (_) =>
-                  const SongLibraryScreen(),
-                ),
-              );
+              foregroundColor:
+                  Colors.black,
 
-            },
-            child: const Text(
-             "Music Library",
+              padding:
+                  const EdgeInsets.all(
+                16,
+              ),
             ),
           ),
-
-          ElevatedButton(
-            onPressed: () {
-
-              Navigator.push(
-                context,
-                  MaterialPageRoute(
-                  builder: (_) =>
-                  const FavoritesScreen(),
-                ),
-              );
-
-            },
-            child: const Text(
-             "Favorite Songs ❤️",
-            ),
         ),
-
-            if (isAdmin)
-              ElevatedButton(
-                onPressed: () { Navigator.push(
-                context,
-                 MaterialPageRoute(
-                 builder: (_) =>
-                 const UploadSongScreen(),
-                  ),
-               );
-               },
-                child: const Text("Upload Song"),
-              ),
-          ],
-        ),
-      ),
+      ],
+    ),
+  ),
+),
     );
   }
 }
